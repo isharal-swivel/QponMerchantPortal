@@ -1,0 +1,30 @@
+// Additional demo deals data for Analytics - Add to allDealsData array
+// Going back from Dec 20 to September 1, 2024
+
+December deals (continuing from existing):
+Dec 20 - Seafood Platter Special
+Dec 19 - Rooftop Dining
+Dec 18 - Signature Cocktails
+Dec 17 - Breakfast Buffet
+Dec 16 - Afternoon Tea
+Dec 15 - Family Dinner
+Dec 14 - Weekend Brunch
+Dec 13 - Pizza Night
+Dec 12 - Sushi Platter
+Dec 11 - Thai Cuisine
+Dec 10 - BBQ Feast
+Dec 9 - Italian Pasta
+Dec 8 - Seafood Grill
+Dec 7 - Sunday Roast
+Dec 6 - Tapas Selection
+Dec 5 - Burger Combo
+Dec 4 - Steak Dinner
+Dec 3 - Vegetarian Special
+Dec 2 - Champagne Brunch
+Dec 1 - Chef's Tasting Menu
+
+November deals (30 entries)
+Oct deals (31 entries)
+Sep deals (30 entries)
+
+Total: ~110 deal entries spanning Sept 1 - Dec 29, 2024
