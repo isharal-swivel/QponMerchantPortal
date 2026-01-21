@@ -6,9 +6,10 @@ interface AuthLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle: string;
+  backButton?: React.ReactNode;
 }
 
-export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
+export function AuthLayout({ children, title, subtitle, backButton }: AuthLayoutProps) {
   // Read dark mode preference from localStorage
   React.useEffect(() => {
     const savedMode = localStorage.getItem('qp_dark_mode');
@@ -43,6 +44,12 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
          </div>
 
         <div className="w-full max-w-md space-y-8 bg-white dark:bg-gradient-to-br dark:from-[#0A0A0A] dark:to-[#141414] p-8 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-black/50 border border-gray-100 dark:border-[#2A2A2A] transition-colors duration-300">
+          {backButton && (
+            <div className="mb-6">
+              {backButton}
+            </div>
+          )}
+          
           <div className="text-center lg:text-left space-y-2">
             <h1 className="text-3xl font-bold text-[#0E2250] dark:text-white tracking-tight transition-colors duration-300">{title}</h1>
             <p className="text-gray-500 dark:text-gray-400 text-base transition-colors duration-300">{subtitle}</p>

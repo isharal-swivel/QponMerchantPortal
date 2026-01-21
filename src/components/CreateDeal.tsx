@@ -30,8 +30,10 @@ export function CreateDeal() {
   
   // Image cropping states - Updated for multiple images with default preset images
   const [uploadedImages, setUploadedImages] = useState<string[]>(presetImages);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
   const [tempImage, setTempImage] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingCover, setEditingCover] = useState(false);
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -47,6 +49,10 @@ export function CreateDeal() {
     originalPrice: '10000',
     discountedPrice: '5000',
     quantity: '',
+    validFrom: '',
+    expiryDate: '',
+    startTime: '',
+    endTime: '',
     validityPeriods: [
       {
         id: Date.now(),
@@ -141,6 +147,23 @@ export function CreateDeal() {
       reader.onloadend = () => {
         setTempImage(reader.result as string);
         setEditingIndex(null); // This is a new upload, not editing
+        setEditingCover(false);
+        setShowCropper(true);
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
+
+  const handleCoverImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTempImage(reader.result as string);
+        setEditingIndex(null);
+        setEditingCover(true);
         setShowCropper(true);
       };
       reader.readAsDataURL(file);
@@ -176,14 +199,20 @@ export function CreateDeal() {
         canvas.toBlob((blob) => {
           if (blob) {
             const url = URL.createObjectURL(blob);
-            if (editingIndex !== null) {
+            if (editingCover) {
+              // Handle cover image
+              setCoverImage(url);
+            } else if (editingIndex !== null) {
+              // Handle editing existing deal image
               const newImages = [...uploadedImages];
               newImages[editingIndex] = url;
               setUploadedImages(newImages);
             } else {
+              // Handle adding new deal image
               setUploadedImages([...uploadedImages, url]);
             }
             setShowCropper(false);
+            setEditingCover(false);
           }
         }, 'image/jpeg');
       };
@@ -352,71 +381,284 @@ export function CreateDeal() {
                       className="h-32" 
                     />
                   </div>
+
+                  {/* Validity Date and Time Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Valid From <span className="text-red-500">*</span></Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal text-[16px] h-10 bg-input-background dark:bg-[#1C1C1C]",
+                              !formData.validFrom && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.validFrom ? format(new Date(formData.validFrom), "PPP") : <span>Select date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.validFrom ? new Date(formData.validFrom) : undefined}
+                            onSelect={(date) => updateForm('validFrom', date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Expired On <span className="text-red-500">*</span></Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal text-[16px] h-10 bg-input-background dark:bg-[#1C1C1C]",
+                              !formData.expiryDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.expiryDate ? format(new Date(formData.expiryDate), "PPP") : <span>Select date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.expiryDate ? new Date(formData.expiryDate) : undefined}
+                            onSelect={(date) => updateForm('expiryDate', date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                            disabled={(date) => formData.validFrom ? date < new Date(formData.validFrom) : false}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Start Time <span className="text-red-500">*</span></Label>
+                      <Popover
+                        open={timePickerOpen['startTime']}
+                        onOpenChange={(open) => setTimePickerOpen(prev => ({...prev, 'startTime': open}))}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal text-[16px] h-10 bg-input-background dark:bg-[#1C1C1C]",
+                              !formData.startTime && "text-muted-foreground"
+                            )}
+                          >
+                            <Clock className="mr-2 h-4 w-4" />
+                            {formData.startTime || "Select time"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-2" align="start">
+                          <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto pr-2">
+                            {Array.from({ length: 24 }, (_, h) => 
+                              ['00', '30'].map(m => {
+                                const hour24 = h.toString().padStart(2, '0');
+                                const time24 = `${hour24}:${m}`;
+                                const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+                                const ampm = h >= 12 ? 'PM' : 'AM';
+                                const time12 = `${hour12.toString().padStart(2, '0')}:${m} ${ampm}`;
+                                return (
+                                  <Button
+                                    key={time24}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="justify-start hover:bg-[#0E2250] hover:text-white text-sm"
+                                    onClick={() => {
+                                      updateForm('startTime', time12);
+                                      setTimePickerOpen(prev => ({...prev, 'startTime': false}));
+                                    }}
+                                  >
+                                    {time12}
+                                  </Button>
+                                );
+                              })
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>End Time <span className="text-red-500">*</span></Label>
+                      <Popover
+                        open={timePickerOpen['endTime']}
+                        onOpenChange={(open) => setTimePickerOpen(prev => ({...prev, 'endTime': open}))}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal text-[16px] h-10 bg-input-background dark:bg-[#1C1C1C]",
+                              !formData.endTime && "text-muted-foreground"
+                            )}
+                          >
+                            <Clock className="mr-2 h-4 w-4" />
+                            {formData.endTime || "Select time"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-2" align="start">
+                          <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto pr-2">
+                            {Array.from({ length: 24 }, (_, h) => 
+                              ['00', '30'].map(m => {
+                                const hour24 = h.toString().padStart(2, '0');
+                                const time24 = `${hour24}:${m}`;
+                                const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+                                const ampm = h >= 12 ? 'PM' : 'AM';
+                                const time12 = `${hour12.toString().padStart(2, '0')}:${m} ${ampm}`;
+                                return (
+                                  <Button
+                                    key={time24}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="justify-start hover:bg-[#0E2250] hover:text-white text-sm"
+                                    onClick={() => {
+                                      updateForm('endTime', time12);
+                                      setTimePickerOpen(prev => ({...prev, 'endTime': false}));
+                                    }}
+                                  >
+                                    {time12}
+                                  </Button>
+                                );
+                              })
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
                 </div>
               )}
 
               {step === 2 && (
                 <div className="space-y-6 max-w-2xl mx-auto">
-                   <input 
-                     type="file" 
-                     id="imageUpload" 
-                     accept="image/*" 
-                     onChange={handleImageUpload} 
-                     className="hidden"
-                     disabled={uploadedImages.length >= 3}
-                   />
-                   <label 
-                     htmlFor="imageUpload"
-                     className={`border-2 border-dashed rounded-xl p-6 sm:p-12 flex flex-col items-center justify-center text-center transition-colors block ${ 
-                       uploadedImages.length >= 3 
-                         ? 'border-gray-200 dark:border-[#1A2F5A] bg-gray-100 dark:bg-[#0E2250]/50 cursor-not-allowed opacity-60' 
-                         : 'border-gray-300 dark:border-[#1A2F5A] hover:bg-gray-50 dark:hover:bg-[#1A2F5A]/30 cursor-pointer bg-gray-50/50 dark:bg-[#1A2F5A]/20'
-                     }`}
-                   >
-                      <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-3 sm:mb-4 ${
-                        uploadedImages.length >= 3 ? 'bg-gray-100 dark:bg-[#1A2F5A] text-gray-400 dark:text-blue-300' : 'bg-blue-50 dark:bg-[#E35000]/20 text-blue-600 dark:text-[#E35000]'
-                      }`}>
-                        <Upload size={24} className="sm:w-8 sm:h-8" />
-                      </div>
-                      <h3 className={`font-medium text-sm sm:text-base ${uploadedImages.length >= 3 ? 'text-gray-500 dark:text-blue-300/70' : 'text-gray-900 dark:text-white'}`}>
-                        {uploadedImages.length >= 3 ? 'Maximum 3 images reached' : 'Click to upload images'}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-gray-500 dark:text-blue-200/70 mt-1 transition-colors duration-300">
-                        {uploadedImages.length >= 3 
-                          ? 'Remove an image to upload a new one' 
-                          : `${uploadedImages.length}/3 images • PNG, JPG (800x400px)`
-                        }
-                      </p>
-                   </label>
-                   
+                   {/* Cover Image Section */}
                    <div className="space-y-3">
-                      <Label>Uploaded images</Label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                        {uploadedImages.map((img, idx) => (
-                          <div 
-                            key={idx}
-                            className="aspect-video rounded-lg overflow-hidden border-2 border-gray-200 relative group hover:border-[#E35000] transition-all"
-                          >
-                            <img src={img} alt={`Uploaded ${idx + 1}`} className="w-full h-full object-cover" />
-                            <div className="absolute top-2 right-2 flex gap-1.5">
-                              <button
-                                onClick={() => handleEditCrop(idx)}
-                                className="w-8 h-8 sm:w-7 sm:h-7 bg-[#E35000] hover:bg-[#c44500] rounded-full shadow-md flex items-center justify-center transition-colors"
-                                title="Crop"
-                              >
-                                <Crop className="w-4 h-4 text-white" />
-                              </button>
-                              <button
-                                onClick={() => handleRemoveImage(idx)}
-                                className="w-8 h-8 sm:w-7 sm:h-7 bg-red-500 hover:bg-red-600 rounded-full shadow-md flex items-center justify-center transition-colors"
-                                title="Delete"
-                              >
-                                <X className="w-4 h-4 text-white" />
-                              </button>
+                     <Label>Upload Cover Image <span className="text-red-500">*</span></Label>
+                     <p className="text-xs text-gray-500 dark:text-gray-400">800 x 400 px recommended.</p>
+                     
+                     {!coverImage && (
+                       <>
+                         <input 
+                           type="file" 
+                           id="coverImageUpload" 
+                           accept="image/*" 
+                           onChange={handleCoverImageUpload} 
+                           className="hidden"
+                         />
+                         <label 
+                           htmlFor="coverImageUpload"
+                           className="border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-colors block border-gray-300 dark:border-[#1A2F5A] hover:bg-gray-50 dark:hover:bg-[#1A2F5A]/30 cursor-pointer bg-gray-50/50 dark:bg-[#1A2F5A]/20"
+                         >
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 bg-blue-50 dark:bg-[#E35000]/20 text-blue-600 dark:text-[#E35000]">
+                              <Upload size={24} />
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                            <h3 className="font-medium text-sm text-gray-900 dark:text-white">
+                              Click or drag to upload cover image
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-blue-200/70 mt-1">
+                              PNG or JPG (max. 2MB)
+                            </p>
+                         </label>
+                       </>
+                     )}
+                     
+                     {coverImage && (
+                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                         <div className="aspect-video rounded-lg overflow-hidden border-2 border-gray-200 relative group hover:border-[#E35000] transition-all">
+                           <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+                           <div className="absolute top-2 right-2 flex gap-1.5">
+                             <button
+                               onClick={() => {
+                                 setEditingCover(true);
+                                 setTempImage(coverImage);
+                                 setShowCropper(true);
+                               }}
+                               className="w-7 h-7 bg-[#E35000] hover:bg-[#c44500] rounded-full shadow-md flex items-center justify-center transition-colors"
+                               title="Crop"
+                             >
+                               <Crop className="w-4 h-4 text-white" />
+                             </button>
+                             <button
+                               onClick={() => setCoverImage(null)}
+                               className="w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full shadow-md flex items-center justify-center transition-colors"
+                               title="Delete"
+                             >
+                               <X className="w-4 h-4 text-white" />
+                             </button>
+                           </div>
+                         </div>
+                       </div>
+                     )}
+                   </div>
+
+                   {/* Deal Images Section */}
+                   <div className="space-y-3">
+                     <Label>Upload Deal Images <span className="text-red-500">*</span></Label>
+                     <p className="text-xs text-gray-500 dark:text-gray-400">Use up to 3 images. 800 x 400 px recommended.</p>
+                     
+                     {uploadedImages.length < 3 && (
+                       <>
+                         <input 
+                           type="file" 
+                           id="imageUpload" 
+                           accept="image/*" 
+                           onChange={handleImageUpload} 
+                           className="hidden"
+                         />
+                         <label 
+                           htmlFor="imageUpload"
+                           className="border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-center transition-colors block border-gray-300 dark:border-[#1A2F5A] hover:bg-gray-50 dark:hover:bg-[#1A2F5A]/30 cursor-pointer bg-gray-50/50 dark:bg-[#1A2F5A]/20"
+                         >
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 bg-blue-50 dark:bg-[#E35000]/20 text-blue-600 dark:text-[#E35000]">
+                              <Upload size={24} />
+                            </div>
+                            <h3 className="font-medium text-sm text-gray-900 dark:text-white">
+                              Click or drag to upload deal images
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-blue-200/70 mt-1">
+                              {uploadedImages.length}/3 images • PNG or JPG (max. 2MB)
+                            </p>
+                         </label>
+                       </>
+                     )}
+                     
+                     {uploadedImages.length > 0 && (
+                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                         {uploadedImages.map((img, idx) => (
+                           <div 
+                             key={idx}
+                             className="aspect-video rounded-lg overflow-hidden border-2 border-gray-200 relative group hover:border-[#E35000] transition-all"
+                           >
+                             <img src={img} alt={`Uploaded ${idx + 1}`} className="w-full h-full object-cover" />
+                             <div className="absolute top-2 right-2 flex gap-1.5">
+                               <button
+                                 onClick={() => handleEditCrop(idx)}
+                                 className="w-7 h-7 bg-[#E35000] hover:bg-[#c44500] rounded-full shadow-md flex items-center justify-center transition-colors"
+                                 title="Crop"
+                               >
+                                 <Crop className="w-4 h-4 text-white" />
+                               </button>
+                               <button
+                                 onClick={() => handleRemoveImage(idx)}
+                                 className="w-7 h-7 bg-red-500 hover:bg-red-600 rounded-full shadow-md flex items-center justify-center transition-colors"
+                                 title="Delete"
+                               >
+                                 <X className="w-4 h-4 text-white" />
+                               </button>
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                     )}
                    </div>
                 </div>
               )}

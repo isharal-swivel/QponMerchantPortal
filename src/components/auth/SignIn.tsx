@@ -9,9 +9,10 @@ import { toast } from 'sonner@2.0.3';
 interface SignInProps {
   onSignIn: () => void;
   onNavigateToSignUp: () => void;
+  onNavigateToForgotPassword?: () => void;
 }
 
-export function SignIn({ onSignIn, onNavigateToSignUp }: SignInProps) {
+export function SignIn({ onSignIn, onNavigateToSignUp, onNavigateToForgotPassword }: SignInProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -63,7 +64,11 @@ export function SignIn({ onSignIn, onNavigateToSignUp }: SignInProps) {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="password" className="dark:text-gray-200 transition-colors duration-300">Password</Label>
-              <button type="button" className="text-xs font-medium text-[#E35000] hover:text-[#c44500] transition-colors duration-300">
+              <button 
+                type="button" 
+                onClick={onNavigateToForgotPassword}
+                className="text-xs font-medium text-[#E35000] hover:text-[#c44500] transition-colors duration-300"
+              >
                 Forgot password?
               </button>
             </div>

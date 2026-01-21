@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Calendar, Tag, Users, TrendingUp, Share2, ChevronLeft, ChevronRight, Clock, DollarSign, Percent, Hash, Edit, Eye, XCircle, FileText } from 'lucide-react';
+import { ArrowLeft, Calendar, Tag, Users, TrendingUp, Share2, ChevronLeft, ChevronRight, Clock, DollarSign, Percent, Hash, Edit, Eye, XCircle, FileText, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -9,6 +9,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "./ui/dialog";
 import {
   Table,
@@ -54,6 +55,7 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
   const dealImages = deal.images || [deal.image];
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [couponDialogOpen, setCouponDialogOpen] = useState(false);
+  const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % dealImages.length);
@@ -109,7 +111,12 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
               />
             </div>
             <div className="absolute top-3 left-3 flex gap-2">
-              <Badge className={`text-xs px-3 py-1 font-medium ${deal.status === 'Active' ? 'bg-emerald-500' : deal.status === 'Expired' ? 'bg-red-500' : 'bg-gray-500'}`}>
+              <Badge className={`text-xs px-3 py-1 font-medium ${
+                deal.status === 'Active' ? 'bg-emerald-500' : 
+                deal.status === 'Expired' ? 'bg-red-500' : 
+                deal.status === 'Deactivated' ? 'bg-gray-600 dark:bg-gray-500' : 
+                'bg-gray-500'
+              }`}>
                 {deal.status}
               </Badge>
               {deal.dealOfTheDayDate && (
@@ -303,12 +310,15 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
               
               <div className="border-t border-gray-200 dark:border-gray-600 my-3 transition-colors duration-300"></div>
               
-              <Button 
-                variant="outline" 
-                className="w-full justify-start h-11 text-sm font-medium text-red-600 dark:text-red-400 border-red-200 dark:border-red-800/30 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-300 dark:hover:border-red-700/50 transition-colors duration-300"
-              >
-                <XCircle className="w-4 h-4 mr-3" /> Deactivate Deal
-              </Button>
+              {deal.status !== 'Deactivated' && (
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start h-11 text-sm font-medium text-red-600 dark:text-red-400 border-red-200 dark:border-red-800/30 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-300 dark:hover:border-red-700/50 transition-colors duration-300"
+                  onClick={() => setDeactivateDialogOpen(true)}
+                >
+                  <XCircle className="w-4 h-4 mr-3" /> Deactivate Deal
+                </Button>
+              )}
             </div>
           </div>
 
@@ -412,6 +422,53 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
               </TableBody>
             </Table>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Deactivate Dialog */}
+      <Dialog open={deactivateDialogOpen} onOpenChange={setDeactivateDialogOpen}>
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[#141414] border-gray-200 dark:border-[#2A2A2A] transition-colors duration-300">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-red-50 dark:bg-red-950/30 rounded-full">
+                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <DialogTitle className="text-xl text-gray-900 dark:text-white transition-colors duration-300">Deactivate Deal</DialogTitle>
+            </div>
+            <DialogDescription className="text-base text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              Are you sure you want to deactivate <span className="font-semibold text-[#0E2250] dark:text-[#E35000] transition-colors duration-300">"{deal.title}"</span>?
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800/30 rounded-lg p-4 my-4">
+            <p className="text-sm font-semibold text-red-900 dark:text-red-200 mb-2">
+              ⚠️ This action is permanent
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              This deal will no longer be visible to customers and cannot be purchased. Once deactivated, this deal cannot be reactivated.
+            </p>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button 
+              variant="outline" 
+              className="h-11 text-sm font-medium border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#1C1C1C] hover:border-gray-300 dark:hover:border-gray-500 text-gray-900 dark:text-gray-200 transition-colors duration-300"
+              onClick={() => setDeactivateDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="h-11 text-sm font-medium bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white transition-colors duration-300"
+              onClick={() => {
+                // Handle deactivation logic here
+                console.log('Deal deactivated:', deal.id);
+                setDeactivateDialogOpen(false);
+              }}
+            >
+              <XCircle className="w-4 h-4 mr-2" />
+              Deactivate Deal
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

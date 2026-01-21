@@ -8,6 +8,7 @@ import { Profile } from "./components/Profile";
 import { MyDeals } from "./components/MyDeals";
 import { SignIn } from "./components/auth/SignIn";
 import { SignUp } from "./components/auth/SignUp";
+import { ForgotPassword } from "./components/auth/ForgotPassword";
 import { WelcomeVideoModal } from "./components/WelcomeVideoModal";
 import { OnboardingGuide } from "./components/OnboardingGuide";
 import { Toaster } from "./components/ui/sonner";
@@ -21,12 +22,14 @@ export default function App() {
     const storedAuth = localStorage.getItem("qp_merchant_auth");
     return storedAuth === "true";
   });
-  const [authView, setAuthView] = useState<"signin" | "signup">(
-    "signin",
-  );
+  const [authView, setAuthView] = useState<
+    "signin" | "signup" | "forgotpassword"
+  >("signin");
   const [currentView, setCurrentView] = useState("dashboard");
-  const [showWelcomeVideo, setShowWelcomeVideo] = useState(false);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showWelcomeVideo, setShowWelcomeVideo] =
+    useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] =
+    useState(false);
 
   const handleLoginSuccess = () => {
     localStorage.setItem("qp_merchant_auth", "true");
@@ -42,10 +45,17 @@ export default function App() {
           <SignIn
             onSignIn={handleLoginSuccess}
             onNavigateToSignUp={() => setAuthView("signup")}
+            onNavigateToForgotPassword={() =>
+              setAuthView("forgotpassword")
+            }
           />
-        ) : (
+        ) : authView === "signup" ? (
           <SignUp
             onSignUp={handleLoginSuccess}
+            onNavigateToSignIn={() => setAuthView("signin")}
+          />
+        ) : (
+          <ForgotPassword
             onNavigateToSignIn={() => setAuthView("signin")}
           />
         )}
