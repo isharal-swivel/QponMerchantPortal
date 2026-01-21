@@ -1791,9 +1791,6 @@ export function MyDeals() {
                   <SelectItem value="deactivated">
                     Deactivated
                   </SelectItem>
-                  <SelectItem value="dealoftheday">
-                    Deal of the Day
-                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
