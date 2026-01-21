@@ -115,6 +115,10 @@ export function Profile() {
   const [isAddBranchOpen, setIsAddBranchOpen] = useState(false);
   const [editingBranchIndex, setEditingBranchIndex] = useState<number | null>(null);
 
+  // Delete Branch Confirmation Dialog State
+  const [isDeleteBranchOpen, setIsDeleteBranchOpen] = useState(false);
+  const [branchToDelete, setBranchToDelete] = useState<number | null>(null);
+
   // Verification State
   const [verifiedMobile, setVerifiedMobile] = useState(true);
   const [verifiedEmail, setVerifiedEmail] = useState(true);
@@ -380,8 +384,18 @@ export function Profile() {
   };
 
   const handleRemoveBranch = (index: number) => {
-     const newBranches = profile.branches.filter((_, i) => i !== index);
-     setProfile(prev => ({ ...prev, branches: newBranches }));
+    setBranchToDelete(index);
+    setIsDeleteBranchOpen(true);
+  };
+
+  const confirmDeleteBranch = () => {
+    if (branchToDelete !== null) {
+      const newBranches = profile.branches.filter((_, i) => i !== branchToDelete);
+      setProfile(prev => ({ ...prev, branches: newBranches }));
+      toast.success('Branch deleted successfully');
+    }
+    setIsDeleteBranchOpen(false);
+    setBranchToDelete(null);
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1645,6 +1659,60 @@ export function Profile() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddBranchOpen(false)} className="border-gray-300 dark:border-[#2A2A2A] dark:text-white">Cancel</Button>
             <Button onClick={handleSaveBranch} className="bg-[#E35000] hover:bg-[#c44500] text-white">Add Branch</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Branch Confirmation Dialog */}
+      <Dialog open={isDeleteBranchOpen} onOpenChange={setIsDeleteBranchOpen}>
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[#141414] border-gray-200 dark:border-[#2A2A2A] transition-colors duration-300">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 dark:text-white transition-colors duration-300">
+              Delete Branch
+            </DialogTitle>
+            <DialogDescription className="text-gray-500 dark:text-gray-400 transition-colors duration-300">
+              Are you sure you want to delete this branch? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          {branchToDelete !== null && (
+            <div className="py-4">
+              <div className="bg-gray-50 dark:bg-[#1C1C1C] border border-gray-200 dark:border-[#2A2A2A] rounded-lg p-4 transition-colors duration-300">
+                <div className="flex items-start gap-3">
+                  <Store className="w-5 h-5 text-[#E35000] flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 dark:text-white transition-colors duration-300">
+                      {profile.branches[branchToDelete].name}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300 mt-1">
+                      {profile.branches[branchToDelete].address}
+                    </p>
+                    {profile.branches[branchToDelete].contact && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300 mt-1">
+                        {profile.branches[branchToDelete].contact}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsDeleteBranchOpen(false);
+                setBranchToDelete(null);
+              }}
+              className="border-gray-300 dark:border-[#2A2A2A] dark:text-white transition-colors duration-300"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={confirmDeleteBranch}
+              className="bg-red-500 hover:bg-red-600 text-white transition-colors duration-300"
+            >
+              Delete Branch
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
