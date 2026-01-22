@@ -2322,33 +2322,7 @@ export function MyDeals() {
                   </PopoverContent>
                 </Popover>
               </div>
-              <div className="sm:w-48">
-                <Label className="text-xs mb-1 block text-gray-700 dark:text-gray-300 transition-colors duration-300">
-                  Filter by Status
-                </Label>
-                <Select
-                  value={couponStatusFilter}
-                  onValueChange={(value) => {
-                    setCouponStatusFilter(value);
-                    setCouponCurrentPage(1);
-                  }}
-                >
-                  <SelectTrigger className="h-9 bg-white dark:bg-[#0E2250] border-gray-300 dark:border-[#1A2F5A] text-gray-900 dark:text-white transition-colors duration-300">
-                    <SelectValue placeholder="All Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">
-                      All Status
-                    </SelectItem>
-                    <SelectItem value="redeemed">
-                      Redeemed
-                    </SelectItem>
-                    <SelectItem value="pending">
-                      Pending
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
             </div>
 
             <div className="rounded-md border bg-white dark:bg-[#0E2250] border-gray-200 dark:border-[#1A2F5A] transition-colors duration-300">

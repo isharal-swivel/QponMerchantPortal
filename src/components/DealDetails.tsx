@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Calendar, Tag, Users, TrendingUp, Share2, ChevronLeft, ChevronRight, Clock, DollarSign, Percent, Hash, Edit, Eye, XCircle, FileText, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Calendar, Tag, Users, TrendingUp, Share2, ChevronLeft, ChevronRight, Clock, DollarSign, Percent, Hash, Edit, Eye, XCircle, FileText, AlertTriangle, Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 import {
   Dialog,
   DialogContent,
@@ -19,6 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 
 interface DealDetailsProps {
   deal: {

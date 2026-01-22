@@ -481,7 +481,7 @@ export function Overview({ onNavigate }: OverviewProps) {
   const recentActivity = [
     {
       id: 1,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Luxury Spa Day Package",
       time: "2 mins ago",
       amount: "+ LKR 8,500",
@@ -489,7 +489,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 2,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Seafood Platter for Two",
       time: "15 mins ago",
       amount: "+ LKR 5,200",
@@ -513,7 +513,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 5,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Afternoon Tea Set",
       time: "5 hours ago",
       amount: "+ LKR 3,800",
@@ -521,7 +521,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 6,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Breakfast Buffet",
       time: "6 hours ago",
       amount: "+ LKR 4,200",
@@ -529,7 +529,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 7,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Couple's Massage Session",
       time: "8 hours ago",
       amount: "+ LKR 9,500",
@@ -553,7 +553,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 10,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Premium Coffee & Pastry",
       time: "14 hours ago",
       amount: "+ LKR 1,800",
@@ -561,7 +561,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 11,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Gym Day Pass",
       time: "16 hours ago",
       amount: "+ LKR 2,500",
@@ -569,7 +569,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 12,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Italian Dinner for Two",
       time: "18 hours ago",
       amount: "+ LKR 6,800",
@@ -585,7 +585,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 14,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Weekend Brunch Special",
       time: "22 hours ago",
       amount: "+ LKR 4,900",
@@ -601,7 +601,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 16,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Sushi Platter",
       time: "1 day ago",
       amount: "+ LKR 7,200",
@@ -609,7 +609,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 17,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Rooftop BBQ Night",
       time: "1 day ago",
       amount: "+ LKR 8,900",
@@ -625,7 +625,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 19,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Kids Play Area Pass",
       time: "2 days ago",
       amount: "+ LKR 1,500",
@@ -633,7 +633,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 20,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Afternoon High Tea",
       time: "2 days ago",
       amount: "+ LKR 3,200",
@@ -641,7 +641,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 21,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Cocktail Masterclass",
       time: "3 days ago",
       amount: "+ LKR 5,500",
@@ -665,7 +665,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 24,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Sunday Brunch Buffet",
       time: "4 days ago",
       amount: "+ LKR 12,500",
@@ -673,7 +673,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 25,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Live Music Night",
       time: "4 days ago",
       amount: "+ LKR 3,000",
@@ -681,7 +681,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 26,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "BBQ Grill Platter",
       time: "5 days ago",
       amount: "+ LKR 6,700",
@@ -697,7 +697,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 28,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Thai Cuisine Special",
       time: "5 days ago",
       amount: "+ LKR 5,400",
@@ -713,7 +713,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 30,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Signature Mocktail Set",
       time: "6 days ago",
       amount: "+ LKR 2,800",
@@ -721,7 +721,7 @@ export function Overview({ onNavigate }: OverviewProps) {
     },
     {
       id: 31,
-      action: "Deal Redeemed",
+      action: "Coupon redeemed",
       detail: "Continental Breakfast Deluxe",
       time: "6 days ago",
       amount: "+ LKR 4,100",
