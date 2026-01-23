@@ -1629,7 +1629,7 @@ export function Analytics() {
                   <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover/tooltip:block w-56 z-50 pointer-events-none">
                     <div className="bg-gray-900 dark:bg-[#0A0A0A] text-white text-xs rounded-lg p-3 shadow-xl border border-transparent dark:border-[#2A2A2A]">
                       <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 dark:bg-[#0A0A0A] rotate-45"></div>
-                      Shows the top 5 deals ranked by total sales in the selected time period.
+                      Ranked by total revenue generated from redemptions in the selected date period. Shows your most profitable deals
                     </div>
                   </div>
                 </div>
@@ -1741,7 +1741,6 @@ export function Analytics() {
                             </div>
                             <div style={{ fontSize: '11px', lineHeight: '1.5', color: isDark ? '#fff' : '#000' }}>
                               <div><strong>Revenue:</strong> LKR {item.revenue.toLocaleString()}</div>
-                              <div><strong>Sold:</strong> {item.sales}</div>
                               <div><strong>Redeemed:</strong> {item.redemptions}</div>
                             </div>
                           </div>
