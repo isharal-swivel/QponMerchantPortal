@@ -6,6 +6,13 @@ import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -63,6 +70,8 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [couponDialogOpen, setCouponDialogOpen] = useState(false);
   const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
+  const [couponSearchQuery, setCouponSearchQuery] = useState("");
+  const [couponStatusFilter, setCouponStatusFilter] = useState("all");
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % dealImages.length);
@@ -75,6 +84,31 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
   const goToImage = (index: number) => {
     setCurrentImageIndex(index);
   };
+
+  const handleViewCouponsOpen = () => {
+    setCouponDialogOpen(true);
+  };
+
+  // Filter coupons based on search and status
+  const filteredCoupons = React.useMemo(() => {
+    let filtered = [...deal.coupons];
+
+    // Search filter
+    if (couponSearchQuery) {
+      filtered = filtered.filter(
+        (coupon) =>
+          coupon.code.toLowerCase().includes(couponSearchQuery.toLowerCase()) ||
+          coupon.customer.toLowerCase().includes(couponSearchQuery.toLowerCase())
+      );
+    }
+
+    // Status filter
+    if (couponStatusFilter !== "all") {
+      filtered = filtered.filter((coupon) => coupon.status.toLowerCase() === couponStatusFilter.toLowerCase());
+    }
+
+    return filtered;
+  }, [deal.coupons, couponSearchQuery, couponStatusFilter]);
 
   // Auto-play carousel
   React.useEffect(() => {
@@ -310,7 +344,7 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
               <Button 
                 variant="outline" 
                 className="w-full justify-start h-11 text-sm font-medium border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#1C1C1C] hover:border-gray-300 dark:hover:border-gray-500 text-gray-900 dark:text-gray-200 transition-colors duration-300" 
-                onClick={() => setCouponDialogOpen(true)}
+                onClick={handleViewCouponsOpen}
               >
                 <Eye className="w-4 h-4 mr-3 text-gray-600 dark:text-gray-300 transition-colors duration-300" /> View Coupons
               </Button>
@@ -392,6 +426,53 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
               <div className="text-sm text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-300">Available</div>
             </div>
           </div>
+
+          {/* Search and Filter Row */}
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            {/* Search Input */}
+            <div className="space-y-2">
+              <Label htmlFor="coupon-search" className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
+                Search Coupons
+              </Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  id="coupon-search"
+                  type="text"
+                  placeholder="Search by code or customer..."
+                  value={couponSearchQuery}
+                  onChange={(e) => setCouponSearchQuery(e.target.value)}
+                  className="pl-9 dark:bg-[#1C1C1C] dark:border-[#2A2A2A] dark:text-white transition-colors duration-300"
+                />
+              </div>
+            </div>
+
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <Label className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
+                Filter by Status
+              </Label>
+              <Select
+                value={couponStatusFilter}
+                onValueChange={setCouponStatusFilter}
+              >
+                <SelectTrigger className="dark:bg-[#1C1C1C] dark:border-[#2A2A2A] dark:text-white transition-colors duration-300">
+                  <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    All
+                  </SelectItem>
+                  <SelectItem value="redeemed">
+                    Redeemed
+                  </SelectItem>
+                  <SelectItem value="pending">
+                    Pending
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 mt-4 bg-white dark:bg-[#0A0A0A] transition-colors duration-300">
             <Table>
@@ -404,14 +485,14 @@ export function DealDetails({ deal, onBack }: DealDetailsProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {deal.coupons.length === 0 ? (
+                {filteredCoupons.length === 0 ? (
                   <TableRow className="border-gray-200 dark:border-gray-700 transition-colors duration-300">
                     <TableCell colSpan={4} className="text-center py-8 text-gray-500 dark:text-gray-400 transition-colors duration-300">
                       No coupons sold yet.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  deal.coupons.map((coupon, i) => (
+                  filteredCoupons.map((coupon, i) => (
                     <TableRow key={i} className="border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#1C1C1C]/50 transition-colors duration-300">
                       <TableCell className="font-mono font-medium text-sm text-gray-900 dark:text-gray-200 transition-colors duration-300">{coupon.code}</TableCell>
                       <TableCell className="text-sm text-gray-900 dark:text-gray-200 transition-colors duration-300">{coupon.customer}</TableCell>

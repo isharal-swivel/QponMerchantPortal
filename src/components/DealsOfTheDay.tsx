@@ -90,6 +90,7 @@ export function DealsOfTheDay({ deals, onBack }: DealsOfTheDayProps) {
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduleSearchQuery, setScheduleSearchQuery] = useState("");
   const [selectedDealsForSchedule, setSelectedDealsForSchedule] = useState<string[]>([]);
+  const [schedulePurchaseFilter, setSchedulePurchaseFilter] = useState("all");
 
   // Filter deals that are marked as Deal of the Day
   const dealOfTheDayDeals = deals.filter((deal) => deal.dealOfTheDayDate);
@@ -104,8 +105,17 @@ export function DealsOfTheDay({ deals, onBack }: DealsOfTheDayProps) {
       );
     }
 
+    // Filter by purchase status
+    if (schedulePurchaseFilter === "high") {
+      filtered = filtered.filter((deal) => deal.sold > 50);
+    } else if (schedulePurchaseFilter === "medium") {
+      filtered = filtered.filter((deal) => deal.sold >= 20 && deal.sold <= 50);
+    } else if (schedulePurchaseFilter === "low") {
+      filtered = filtered.filter((deal) => deal.sold < 20);
+    }
+
     return filtered;
-  }, [deals, scheduleSearchQuery]);
+  }, [deals, scheduleSearchQuery, schedulePurchaseFilter]);
 
   // Date range helper functions
   const getDateRangeDisplay = () => {
@@ -812,35 +822,52 @@ export function DealsOfTheDay({ deals, onBack }: DealsOfTheDayProps) {
 
       {/* Set New Deals of the Day Dialog */}
       <Dialog open={setNewDealsOpen} onOpenChange={setSetNewDealsOpen}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] bg-white dark:bg-[#1A2F5A] dark:border-[#2A4575] transition-colors duration-300">
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-white dark:bg-[#141414] border-gray-200 dark:border-[#2A2A2A] transition-colors duration-300">
           <DialogHeader>
-            <DialogTitle className="dark:text-white transition-colors duration-300">
+            <DialogTitle className="text-xl text-gray-900 dark:text-white transition-colors duration-300">
               Schedule Deal of the Day
             </DialogTitle>
-            <DialogDescription className="dark:text-blue-200/70 transition-colors duration-300">
+            <DialogDescription className="text-base text-gray-600 dark:text-gray-300 transition-colors duration-300">
               Select a date and choose deals to feature as Deal of the Day.
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-4">
-            {/* Date Input */}
-            <div className="space-y-2">
-              <Label htmlFor="schedule-date" className="text-sm dark:text-white transition-colors duration-300">
-                Date
-              </Label>
-              <Input
-                id="schedule-date"
-                type="date"
-                value={scheduleDate}
-                onChange={(e) => setScheduleDate(e.target.value)}
-                placeholder="yyyy-mm-dd"
-                className="dark:bg-[#1C1C1C] dark:border-[#2A2A2A] dark:text-white transition-colors duration-300"
-              />
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="bg-gray-50 dark:bg-[#1C1C1C] rounded-xl p-4 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+              <div className="text-2xl font-bold text-[#0E2250] dark:text-white transition-colors duration-300">{deals.filter(d => d.status === "Active").length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-300">Active deals</div>
             </div>
+            <div className="bg-orange-50 dark:bg-[#1C1C1C] rounded-xl p-4 border border-orange-200 dark:border-orange-800/30 transition-colors duration-300">
+              <div className="text-2xl font-bold text-[#E35000] dark:text-[#FF6B35] transition-colors duration-300">{selectedDealsForSchedule.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-300">Selected</div>
+            </div>
+            <div className="bg-emerald-50 dark:bg-[#1C1C1C] rounded-xl p-4 border border-emerald-200 dark:border-emerald-800/30 transition-colors duration-300">
+              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 transition-colors duration-300">{availableDealsForSchedule.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-300">Available</div>
+            </div>
+          </div>
 
+          {/* Date Input */}
+          <div className="space-y-2 mt-4">
+            <Label htmlFor="schedule-date" className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
+              Date
+            </Label>
+            <Input
+              id="schedule-date"
+              type="date"
+              value={scheduleDate}
+              onChange={(e) => setScheduleDate(e.target.value)}
+              placeholder="yyyy-mm-dd"
+              className="dark:bg-[#1C1C1C] dark:border-[#2A2A2A] dark:text-white transition-colors duration-300 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+            />
+          </div>
+
+          {/* Search and Filter Row */}
+          <div className="grid grid-cols-2 gap-3 mt-4">
             {/* Search Input */}
             <div className="space-y-2">
-              <Label htmlFor="schedule-search" className="text-sm dark:text-white transition-colors duration-300">
+              <Label htmlFor="schedule-search" className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
                 Search Deals
               </Label>
               <div className="relative">
@@ -856,54 +883,83 @@ export function DealsOfTheDay({ deals, onBack }: DealsOfTheDayProps) {
               </div>
             </div>
 
-            {/* Deals List */}
+            {/* Purchase Filter */}
             <div className="space-y-2">
-              <Label className="text-sm dark:text-white transition-colors duration-300">
-                Select Deals
+              <Label className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
+                Filter by Purchase
               </Label>
-              <div className="border dark:border-[#2A2A2A] rounded-md max-h-[300px] overflow-y-auto transition-colors duration-300">
-                {availableDealsForSchedule.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-gray-500 dark:text-blue-200/70 transition-colors duration-300">
-                    No deals available
-                  </div>
-                ) : (
-                  availableDealsForSchedule.map((deal) => (
-                    <div
-                      key={deal.id}
-                      className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-[#2A4575]/20 border-b last:border-b-0 dark:border-[#2A2A2A] transition-colors duration-300"
-                    >
-                      <Checkbox
-                        checked={selectedDealsForSchedule.includes(deal.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedDealsForSchedule([...selectedDealsForSchedule, deal.id]);
-                          } else {
-                            setSelectedDealsForSchedule(selectedDealsForSchedule.filter((id) => id !== deal.id));
-                          }
-                        }}
-                        className="flex-shrink-0"
-                      />
-                      <img
-                        src={deal.image}
-                        alt={deal.title}
-                        className="w-12 h-12 object-cover rounded flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-gray-900 dark:text-white truncate transition-colors duration-300">
-                          {deal.title}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-blue-200/70 transition-colors duration-300">
-                          Sold: {deal.sold}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+              <Select
+                value={schedulePurchaseFilter}
+                onValueChange={setSchedulePurchaseFilter}
+              >
+                <SelectTrigger className="dark:bg-[#1C1C1C] dark:border-[#2A2A2A] dark:text-white transition-colors duration-300">
+                  <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    All
+                  </SelectItem>
+                  <SelectItem value="high">
+                    High (Sold &gt; 50)
+                  </SelectItem>
+                  <SelectItem value="medium">
+                    Medium (20-50 Sold)
+                  </SelectItem>
+                  <SelectItem value="low">
+                    Low (Sold &lt; 20)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <DialogFooter className="mt-6">
+          {/* Deals List */}
+          <div className="space-y-2 mt-4">
+            <Label className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-300">
+              Select Deals
+            </Label>
+            <div className="rounded-lg border border-gray-200 dark:border-gray-700 max-h-[300px] overflow-y-auto bg-white dark:bg-[#0A0A0A] transition-colors duration-300">
+              {availableDealsForSchedule.length === 0 ? (
+                <div className="p-8 text-center text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                  No deals available
+                </div>
+              ) : (
+                availableDealsForSchedule.map((deal) => (
+                  <div
+                    key={deal.id}
+                    className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-[#1C1C1C]/50 border-b last:border-b-0 border-gray-200 dark:border-gray-700 transition-colors duration-300"
+                  >
+                    <Checkbox
+                      checked={selectedDealsForSchedule.includes(deal.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedDealsForSchedule([...selectedDealsForSchedule, deal.id]);
+                        } else {
+                          setSelectedDealsForSchedule(selectedDealsForSchedule.filter((id) => id !== deal.id));
+                        }
+                      }}
+                      className="flex-shrink-0"
+                    />
+                    <img
+                      src={deal.image}
+                      alt={deal.title}
+                      className="w-12 h-12 object-cover rounded flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm text-gray-900 dark:text-gray-200 truncate transition-colors duration-300">
+                        {deal.title}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                        Sold: {deal.sold}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6 gap-2 sm:gap-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -911,8 +967,9 @@ export function DealsOfTheDay({ deals, onBack }: DealsOfTheDayProps) {
                 setScheduleDate("");
                 setScheduleSearchQuery("");
                 setSelectedDealsForSchedule([]);
+                setSchedulePurchaseFilter("all");
               }}
-              className="dark:border-[#2A4575] dark:text-white dark:hover:bg-[#2A4575] transition-colors duration-300"
+              className="h-11 text-sm font-medium border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-[#1C1C1C] hover:border-gray-300 dark:hover:border-gray-500 text-gray-900 dark:text-gray-200 transition-colors duration-300"
             >
               Cancel
             </Button>
@@ -923,9 +980,10 @@ export function DealsOfTheDay({ deals, onBack }: DealsOfTheDayProps) {
                 setScheduleDate("");
                 setScheduleSearchQuery("");
                 setSelectedDealsForSchedule([]);
+                setSchedulePurchaseFilter("all");
               }}
               disabled={selectedDealsForSchedule.length === 0 || !scheduleDate}
-              className="bg-[#E35000] hover:bg-[#c44500] text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-11 text-sm font-medium bg-[#E35000] hover:bg-[#c44500] text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Schedule {selectedDealsForSchedule.length > 0 ? `${selectedDealsForSchedule.length} ` : ""}Deal{selectedDealsForSchedule.length !== 1 ? "s" : ""}
             </Button>

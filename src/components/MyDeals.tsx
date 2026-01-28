@@ -2502,7 +2502,7 @@ export function MyDeals() {
                 <Input
                   id="date"
                   type="date"
-                  className="pl-9 border-gray-300 dark:border-[#2A2A2A] text-gray-900 dark:text-white bg-white dark:bg-[#0A0A0A] focus:ring-2 focus:ring-[#E35000] focus:border-[#E35000] dark:focus:border-[#E35000] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:dark:invert [&::-webkit-calendar-picker-indicator]:opacity-70 hover:[&::-webkit-calendar-picker-indicator]:opacity-100 transition-all duration-200"
+                  className="pl-9 border-gray-300 dark:border-[#2A2A2A] text-gray-900 dark:text-white bg-white dark:bg-[#0A0A0A] focus:ring-2 focus:ring-[#E35000] focus:border-[#E35000] dark:focus:border-[#E35000] [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer transition-all duration-200"
                   value={selectedDate}
                   onChange={(e) =>
                     setSelectedDate(e.target.value)
